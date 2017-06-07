@@ -1,7 +1,12 @@
 # ZY1270 Logger
 Loggging of the yzxstudio zy1270 "bluetooth" USB-Powermeter.
 
-#Instalation
+![Alt text](img/zy1270Stick.jpg?raw=true "Optional Title")
+
+![Alt text](img/application.png?raw=true "Optional Title")
+
+
+# Installation
 
 - Pair the ZY1270 Bluetooth, the name must be "SPP-CA" and password 1234
 - There will now be new COM Ports in your extended Bluetooth-Settings
