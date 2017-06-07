@@ -8,9 +8,15 @@ package de.stefanwndelmann.zy1270logger;
 import com.fazecast.jSerialComm.SerialPort;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -83,7 +89,7 @@ public class ZY1270LoggerMain extends javax.swing.JFrame {
         jFreeChartPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         resultTable = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
+        saveCSVButton = new javax.swing.JButton();
         clearButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -134,8 +140,12 @@ public class ZY1270LoggerMain extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(resultTable);
 
-        jButton2.setText("Save as CSV");
-        jButton2.setEnabled(false);
+        saveCSVButton.setText("Save as CSV");
+        saveCSVButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveCSVButtonActionPerformed(evt);
+            }
+        });
 
         clearButton.setText("Clear");
         clearButton.addActionListener(new java.awt.event.ActionListener() {
@@ -163,7 +173,7 @@ public class ZY1270LoggerMain extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 572, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(saveCSVButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(clearButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
@@ -184,7 +194,7 @@ public class ZY1270LoggerMain extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jFreeChartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2)
+                        .addComponent(saveCSVButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(clearButton)
                         .addGap(0, 0, Short.MAX_VALUE))))
@@ -284,6 +294,44 @@ public class ZY1270LoggerMain extends javax.swing.JFrame {
         voltageSeries.clear();
     }//GEN-LAST:event_clearButtonActionPerformed
 
+    private void saveCSVButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCSVButtonActionPerformed
+        // TODO add your handling code here:
+        String data = getCSVData();
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("CSV Files", "csv"));
+        int retrival = chooser.showSaveDialog(null);
+        if (retrival == JFileChooser.APPROVE_OPTION) {
+            try (FileWriter fw = new FileWriter(chooser.getSelectedFile() + ".csv")) {
+                fw.write(data);
+            } catch (IOException ex) {
+                Logger.getLogger(ZY1270LoggerMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }//GEN-LAST:event_saveCSVButtonActionPerformed
+
+    /**
+     * Reads the Data from the JTable and returns it as a CSV String.
+     * 
+     * @return 
+     */
+    private String getCSVData() {
+        DefaultTableModel dtm = (DefaultTableModel) resultTable.getModel();
+        int nRow = dtm.getRowCount(), nCol = dtm.getColumnCount();
+        String data = "";
+        for (int i = 0; i < nCol; i++) {
+            data += dtm.getColumnName(i) + ";";
+        }
+        data = data.substring(0, data.length() - 1) + "\n";
+        for (int i = 0; i < nRow; i++) {
+            for (int j = 0; j < nCol; j++) {
+                data += dtm.getValueAt(i, j) + ";";
+            }
+            data = data.substring(0, data.length() - 1) + "\n";
+        }
+        return data;
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -322,12 +370,12 @@ public class ZY1270LoggerMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clearButton;
     private javax.swing.JButton connectButton;
-    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jFreeChartPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox<String> portList;
     private javax.swing.JTable resultTable;
+    private javax.swing.JButton saveCSVButton;
     // End of variables declaration//GEN-END:variables
 }
